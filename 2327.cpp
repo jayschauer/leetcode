@@ -7,34 +7,42 @@ using namespace std;
 class Solution {
  public:
   int peopleAwareOfSecret(int n, int delay, int forget) {
-    // At end of day i, learners[i-1] is the number of people who learn the
-    // secret on a given day
-    vector<long long> learners(n, 0);
-    long long sharers = 0;
-    long long total = 1;
+    // Learners[i-1] is the number of people who learn the secret on day i
+    vector<int> learners(n, 0);
+    int sharers = 0;  // running total of people who can share the secret
+    int total = 1;    // running total of people who know the secret
 
-    // End of day 1, 1 person learns the secret:
+    // Day 1, 1 person learns the secret:
     learners[0] = 1;
 
+    // Day delay to forget - can ignore forgetting
     for (int day = delay; day < forget; day++) {
-      // people who share equals previous sharers plus people who start
-      // sharing today
-      sharers = sharers + learners[day - delay];
+      // New sharers are those who learned the secret 'delay' days ago
+      sharers = (sharers + learners[day - delay]) % modulo;
+      // All sharers share the secret with a new set of learners
       learners[day] = sharers;
-      total = (total + sharers) % modulo;
+      // Add new learners to total
+      total = (total + learners[day]) % modulo;
     }
 
+    // Day forget to n - need to account for forgetting
     for (int day = forget; day < n; day++) {
-      sharers = sharers + learners[day - delay] - learners[day - forget];
+      // Remove those who forget the secret today
+      sharers = (sharers - learners[day - forget]) % modulo;
+      // Add new sharers who learned the secret 'delay' days ago
+      sharers = (sharers + learners[day - delay]) % modulo;
+      // All sharers share the secret with a new set of learners
       learners[day] = sharers;
-      total = (total + sharers - learners[day - forget]) % modulo;
+      // Remove those who forget the secret today, add new learners
+      total = (total - learners[day - forget]) % modulo;
+      total = (total + learners[day]) % modulo;
     }
 
-    return (int)total;
+    return (total + modulo) % modulo;  // make sure answer is positive
   }
 
  private:
-  static constexpr long long modulo = 1'000'000'000 + 7;
+  static constexpr int modulo = 1'000'000'000 + 7;
 };
 
 int main() {
