@@ -7,56 +7,34 @@ using namespace std;
 class Solution {
  public:
   int peopleAwareOfSecret(int n, int delay, int forget) {
-    // p.second stores the number of people who know the secret for p.first days
-    queue<pair<int, int>> knowers;
+    // At end of day i, learners[i-1] is the number of people who learn the
+    // secret on a given day
+    vector<long long> learners(n, 0);
+    long long sharers = 0;
+    long long total = 1;
 
-    // End of day 1, 1 person knows the secret:
-    knowers.emplace(1, 1);
+    // End of day 1, 1 person learns the secret:
+    learners[0] = 1;
 
-    // days 2-n:
-    for (int i = 1; i < n; i++) {
-      int learners = 0;
-
-      while (true) {
-        const pair<int, int>& front = knowers.front();
-
-        // Skip people who forget today
-        if (front.first >= forget) {
-          knowers.pop();
-          continue;
-        }
-
-        // Copy people who haven't forgot forward
-        knowers.emplace(front.first + 1, front.second);
-
-        // if they've reached delay, add the people they share with to learners
-        if (front.first >= delay) {
-          learners = (learners + front.second) % modulo;
-        }
-
-        // Base case: learners from yesterday. They
-        if (front.first == 1) {
-          knowers.pop();
-          break;
-        }
-
-        knowers.pop();
-      }
-
-      knowers.emplace(1, learners);
+    for (int day = delay; day < forget; day++) {
+      // people who share equals previous sharers plus people who start
+      // sharing today
+      sharers = sharers + learners[day - delay];
+      learners[day] = sharers;
+      total = (total + sharers) % modulo;
     }
 
-    // return the number of people who know the secret at the end of day n
-    int total = 0;
-    while (!knowers.empty()) {
-      total = (total + knowers.front().second) % modulo;
-      knowers.pop();
+    for (int day = forget; day < n; day++) {
+      sharers = sharers + learners[day - delay] - learners[day - forget];
+      learners[day] = sharers;
+      total = (total + sharers - learners[day - forget]) % modulo;
     }
-    return total;
+
+    return (int)total;
   }
 
  private:
-  static constexpr int modulo = 1000000000 + 7;
+  static constexpr long long modulo = 1'000'000'000 + 7;
 };
 
 int main() {
