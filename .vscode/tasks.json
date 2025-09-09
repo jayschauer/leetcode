@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build current file",
+			"type": "shell",
+			"command": "g++ -g \"${file}\" -o \"${fileDirname}/${fileBasenameNoExtension}.out\"",
+			"args": [],
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+		}
+	]
+}
