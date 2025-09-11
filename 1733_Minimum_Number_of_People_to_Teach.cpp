@@ -10,7 +10,38 @@ class Solution {
  public:
   int minimumTeachings(int n, vector<vector<int>>& languages,
                        vector<vector<int>>& friendships) {
-    return 0;
+    // First find set of users that can't communicate:
+    unordered_set<int> cannot_communicate;
+    for (auto& friends : friendships) {
+      int u = friends[0] - 1;
+      int v = friends[1] - 1;
+      unordered_set<int> friend_u_languages(languages[u].begin(),
+                                            languages[u].end());
+      bool can_communicate = false;
+      for (int lang : languages[v]) {
+        if (friend_u_languages.contains(lang)) {
+          can_communicate = true;
+          break;
+        }
+      }
+
+      if (!can_communicate) {
+        cannot_communicate.insert(u);
+        cannot_communicate.insert(v);
+      }
+    }
+
+    // Figure out which language is already known by the most people.
+    // Greedily choose to teach everyone else that language.
+    vector<int> language_count(n + 1, 0);
+    int max_count = 0;
+    for (int user : cannot_communicate) {
+      for (int lang : languages[user]) {
+        language_count[lang]++;
+        max_count = max(max_count, language_count[lang]);
+      }
+    }
+    return cannot_communicate.size() - max_count;
   }
 };
 
