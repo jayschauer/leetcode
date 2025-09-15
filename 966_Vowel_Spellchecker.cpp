@@ -1,6 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+/**
+ * 966. Vowel Spellchecker
+ *
+ * https://leetcode.com/problems/vowel-spellchecker/
+ */
 class Solution {
  public:
   vector<string> spellchecker(vector<string>& wordlist,
