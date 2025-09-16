@@ -10,8 +10,21 @@ using namespace std;
 class Solution {
  public:
   int maxArea(vector<int>& height) {
-    // todo
-    return 0;
+    int maxArea = 0;
+    int i = 0;
+    int j = height.size() - 1;
+    while (i < j) {
+      int width = j - i;
+      int area = width * min(height[i], height[j]);
+      if (area > maxArea) maxArea = area;
+
+      if (height[i] < height[j]) {
+        i++;
+      } else {
+        j--;
+      }
+    }
+    return maxArea;
   }
 };
 
