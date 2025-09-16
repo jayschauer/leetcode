@@ -8,7 +8,31 @@ using namespace std;
  */
 class Solution {
  public:
-  vector<vector<int>> threeSum(vector<int>& nums) {
+  vector<vector<int>> threeSum(vector<int>& nums) { return threeSumSort(nums); }
+
+ private:
+  vector<vector<int>> threeSumNoSort(const vector<int>& nums) {
+    set<vector<int>> res;
+    unordered_set<int> dups;
+    unordered_map<int, int> seen;
+
+    for (int i = 0; i < nums.size(); i++)
+      if (dups.insert(nums[i]).second) {
+        for (int j = i + 1; j < nums.size(); j++) {
+          int complement = -nums[i] - nums[j];
+          auto it = seen.find(complement);
+          if (it != end(seen) && it->second == i) {
+            vector<int> triplet = {nums[i], nums[j], complement};
+            sort(triplet.begin(), triplet.end());
+            res.insert(triplet);  // rely on set to avoid duplicates
+          }
+          seen[nums[j]] = i;
+        }
+      }
+    return vector<vector<int>>(res.begin(), res.end());
+  }
+
+  vector<vector<int>> threeSumSort(vector<int>& nums) {
     // Naive solution: just compare everything, O(n^3)
 
     // Can repeat what we did for 2-some: sort the array, then make the target
