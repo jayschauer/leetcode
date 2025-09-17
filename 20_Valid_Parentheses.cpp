@@ -4,7 +4,7 @@ using namespace std;
 /**
  * 20. Valid Parentheses
  *
- * https://leetcode.com/problems/valid-parentheses/description/
+ * https://leetcode.com/problems/valid-parentheses/
  */
 class Solution {
  public:
