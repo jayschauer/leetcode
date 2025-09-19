@@ -35,6 +35,37 @@ class Solution {
       return max(total - minSum, maxSum);
     }
   }
+
+  int maxSubarraySumCircularSuffix(const vector<int>& nums) {
+    // find rightMax - the largest suffix sum from any position
+    vector<int> rightMax(nums.size());
+    int suffixSum = nums[nums.size() - 1];
+    rightMax[nums.size() - 1] = nums[nums.size() - 1];
+    for (int i = nums.size() - 2; i > 0; i--) {
+      suffixSum += nums[i];
+      rightMax[i] = max(rightMax[i + 1], suffixSum);
+    }
+
+    // Now use kadane's to find the largest non-circular subarray,
+    // while also keeping a prefix sum and checking if prefix + suffix is
+    // larger.
+    int prefixSum = 0;
+    int currentSum = 0;
+    int maxSum = nums[0];
+    for (int i = 0; i < nums.size(); i++) {
+      // Either keep currentSum going or startover with nums[i]
+      currentSum = max(currentSum, 0) + nums[i];
+      maxSum = max(maxSum, currentSum);
+      prefixSum += nums[i];
+      if (i + 1 < nums.size()) {
+        // why i+1? don't want to include the current element in the suffix sum
+        // since it's already included in the prefix
+        maxSum = max(maxSum, prefixSum + rightMax[i + 1]);
+      }
+    }
+
+    return maxSum;
+  }
 };
 
 int main() {
