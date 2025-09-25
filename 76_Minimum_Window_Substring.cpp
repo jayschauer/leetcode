@@ -9,63 +9,41 @@ using namespace std;
 class Solution {
  public:
   string minWindow(string s, string t) {
-    // Algorithm:
-    // Make sliding window big enough until we have a substring that works
-    // Once we do, shrink from left until it doesn't.
-    // Now move substring until it works again. At that point, shrink from
-    // left until it doesn't.
-
-    // How to efficiently check if our substring "works":
-    // Make a frequency map of letters in t.
-    // Make a frequency map of letters in our sliding window that match our
-    // "target" letters. Add / remove letters from from the map as the
-    // sliding window changes. Track when we have "enough" of each letter in
-    // our substring to make target.
-
-    if (s.size() < t.size() || t.empty()) {
-      return "";
-    }
-
-    array<int, 128> target{};
     array<int, 128> freq{};
-    int need = 0;
+    int need = t.size();
     for (char c : t) {
-      target[c]++;
-      if (target[c] == 1) {
-        need++;
-      }
+      freq[c]++;
     }
-
-    int have = 0;
-    int resL = 0;
-    int resLength = s.size() + 1;
+    // For every c where freq[c] > 0, we still need those characters from s in
+    // our substring. The sum of those frequencies will equal need.
 
     int l = 0;
-    for (int r = 0; r < s.size(); r++) {
+    int r = 0;
+    int resStart = 0;
+    int resLength = s.size() + 1;
+
+    while (r < s.size()) {
       char c = s[r];
-      if (target[c] > 0) {
-        freq[c]++;
-        if (freq[c] == target[c]) {
-          have++;  // we have enough of this character
-        }
+      if (freq[c] > 0) {
+        need--;  // this was a character we needed
       }
+      freq[c]--;
+      r++;
 
-      while (have == need) {
-        // we have enough of every character in target
-        if ((r - l + 1) < resLength) {
-          resLength = r - l + 1;
-          resL = l;
+      while (need == 0) {
+        // We have a valid substring.
+        if (r - l < resLength) {
+          resStart = l;
+          resLength = r - l;
         }
 
-        char oldChar = s[l];
-        if (target[oldChar] > 0) {
-          freq[oldChar]--;
-          // Okay for this check to just be <, since we will break out
-          // of the loop the first time it gets hit.
-          if (freq[oldChar] < target[oldChar]) {
-            have--;
-          }
+        // Try making substring smaller.
+        int oldChar = s[l];
+        if (freq[oldChar] == 0) {
+          // After removing oldChar, we need more of it.
+          need++;
         }
+        freq[oldChar]++;
         l++;
       }
     }
@@ -73,7 +51,7 @@ class Solution {
     if (resLength == s.size() + 1) {
       return "";
     } else {
-      return s.substr(resL, resLength);
+      return s.substr(resStart, resLength);
     }
   }
 };
