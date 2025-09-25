@@ -26,21 +26,24 @@ class Solution {
       return "";
     }
 
-    unordered_map<char, int> target;
-    unordered_map<char, int> freq;
+    array<int, 128> target{};
+    array<int, 128> freq{};
+    int need = 0;
     for (char c : t) {
       target[c]++;
+      if (target[c] == 1) {
+        need++;
+      }
     }
 
     int have = 0;
-    int need = target.size();
     int resL = 0;
     int resLength = s.size() + 1;
 
     int l = 0;
     for (int r = 0; r < s.size(); r++) {
       char c = s[r];
-      if (target.count(c)) {
+      if (target[c] > 0) {
         freq[c]++;
         if (freq[c] == target[c]) {
           have++;  // we have enough of this character
@@ -55,7 +58,7 @@ class Solution {
         }
 
         char oldChar = s[l];
-        if (target.count(oldChar)) {
+        if (target[oldChar] > 0) {
           freq[oldChar]--;
           // Okay for this check to just be <, since we will break out
           // of the loop the first time it gets hit.
