@@ -28,41 +28,51 @@ class Solution {
       return false;
     }
 
-    unordered_map<char, int> freq;
+    array<int, 26> freq{};
     for (char c : s1) {
-      freq[c]++;
+      freq[c - 'a']++;
     }
 
     // Initialize window with first substring
     for (int i = 0; i < s1.size(); i++) {
-      freq[s2[i]]--;
-      if (freq[s2[i]] == 0) {
-        freq.erase(s2[i]);
-      }
+      freq[s2[i] - 'a']--;
     }
 
-    if (freq.empty()) {
-      return true;
+    int notMatching = 0;
+    for (int f : freq) {
+      if (f != 0) {
+        notMatching++;
+      }
     }
 
     for (int i = s1.size(); i < s2.size(); i++) {
+      if (notMatching == 0) {
+        return true;
+      }
+
       // Remove character outside window
-      freq[s2[i - s1.size()]]++;
-      if (freq[s2[i - s1.size()]] == 0) {
-        freq.erase(s2[i - s1.size()]);
+      char oldChar = s2[i - s1.size()];
+      freq[oldChar - 'a']++;
+      // Update frequency depending on if something changes
+      if (freq[oldChar - 'a'] == 0) {
+        // wasn't matching but now is!
+        notMatching--;
+      } else if (freq[oldChar - 'a'] == 1) {
+        // was matching but now isn't!
+        notMatching++;
       }
 
       // Add new character to window,
-      freq[s2[i]]--;
-      if (freq[s2[i]] == 0) {
-        freq.erase(s2[i]);
-      }
-
-      if (freq.empty()) {
-        return true;
+      freq[s2[i] - 'a']--;
+      if (freq[s2[i] - 'a'] == 0) {
+        // wasn't matching but now is!
+        notMatching--;
+      } else if (freq[s2[i] - 'a'] == -1) {
+        // was matching but now isn't!
+        notMatching++;
       }
     }
 
-    return false;
+    return notMatching == 0;
   }
 };
