@@ -12,7 +12,12 @@
       "args": [],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
-      "environment": [],
+      "environment": [
+        {
+          "name": "ASAN_OPTIONS",
+          "value": "abort_on_error=1:detect_leaks=0"
+        }
+      ],
       "externalConsole": false,
       "MIMode": "gdb",
       "preLaunchTask": "build current file",
