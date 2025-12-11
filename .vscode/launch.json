@@ -31,6 +31,10 @@
           "description": "Set Disassembly Flavor to Intel",
           "text": "-gdb-set disassembly-flavor intel",
           "ignoreFailures": true
+        },
+        {
+          "description": "Print polymorphic objects according to dynamic type",
+          "text": "set print object on"
         }
       ],
       "targetArchitecture": "x86_64"
