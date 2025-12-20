@@ -5,21 +5,22 @@ class Solution {
  public:
   vector<int> dailyTemperatures(const vector<int>& temperatures) {
     vector<int> result(temperatures.size(), 0);
-    stack<int> coldestIndex;
-    for (int i = temperatures.size() - 1; i >= 0; i--) {
+    for (int i = temperatures.size() - 2; i >= 0; i--) {
       int tempToday = temperatures[i];
+      int j = i + 1;
       // find next coldest
-      while (!coldestIndex.empty() &&
-             tempToday >= temperatures[coldestIndex.top()]) {
-        coldestIndex.pop();
+      while (tempToday >= temperatures[j] && j < temperatures.size()) {
+        if (result[j] == 0) {
+          break;
+        }
+        j += result[j];
       }
-      if (coldestIndex.empty()) {
-        coldestIndex.push(i);
+      if (tempToday >= temperatures[j] && result[j] == 0) {
         continue;  // result is already set to 0
       }
+
       // else we found the next coldest temperature
-      result[i] = coldestIndex.top() - i;
-      coldestIndex.push(i);
+      result[i] = j - i;
     }
     return result;
   }
