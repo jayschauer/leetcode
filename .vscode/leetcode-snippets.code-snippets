@@ -22,6 +22,9 @@
 			"#include <bits/stdc++.h>",
 			"using namespace std;",
 			"",
+			// assumes files are named like "1000-<problem-name>.cpp"
+			"// https://leetcode.com/problems/${TM_FILENAME_BASE/^\\d+-(.*)$/$1/}/",
+			"",
 			"int main() {",
 			"  Solution sol;",
 			"",
