@@ -6,78 +6,41 @@ using namespace std;
 class Solution {
  public:
   int search(const vector<int>& nums, int target) {
-    // Two binary searches: one to find the rotation point.
-    // Then depending on the first value, search either before/after
-    // rotation.
-    int pivot = findPivot(nums);
-    int l, r;
-
-    if (pivot == 0) {
-      l = 0;
-      r = nums.size() - 1;
-    } else if (nums[0] <= target) {
-      // target is in range [0, pivot)
-      l = 0;
-      r = pivot - 1;
-    } else {
-      // target is in range [pivot, n)
-      l = pivot;
-      r = nums.size() - 1;
-    }
-
-    return binarySearch(l, r, nums, target);
-  }
-
-  int findPivot(const vector<int>& nums) {
     int l = 0;
     int r = nums.size() - 1;
-    if (!isBeforeRotation(l, r, nums)) {
-      return l;
-    }
-    while (r - l > 1) {
-      int m = l + (r - l) / 2;
-      if (isBeforeRotation(m, r, nums)) {
-        // splitting at m gives us a point before the rotation
-        l = m;
-      } else {
-        // other section isn't sorted, so min must be in there.
-        r = m;
-      }
-    }
-    return r;
-  }
-
- private:
-  int binarySearch(int l, int r, const vector<int>& nums, int target) {
-    // preconditions:
-    // 1) nums[l] is < target
-    // 2) nums[r] is >= target
-    if (nums[l] >= target || nums[r] < target) {
-      if (nums[l] == target) {
-        return l;
-      }
-      // target can't be in the range
-      return -1;
-    }
-    while (r - l > 1) {
+    while (l <= r) {
       int mid = l + (r - l) / 2;
-      if (nums[mid] < target) {
-        l = mid;
-      } else {
-        r = mid;
+      if (nums[mid] == target) {
+        return mid;
       }
-    }
 
-    // so now we have nums[l] < target and nums[r] >= target
-    if (nums[r] == target) {
-      return r;
+      if (nums[mid] < target) {
+        // Target is to the "right".
+        // Need to decide if we search left of mid or right of mid.
+        // So need to figure out which section will have target.
+        if (nums[l] <= nums[mid] || nums[l] > target) {
+          // If nums[l] <= nums[mid] then [l,mid] section is increasing,
+          // and target > mid, so it must be to the right.
+          // Target will also be to the right when the left edge is more than
+          // target.
+          l = mid + 1;
+        } else {
+          r = mid - 1;
+        }
+      } else {
+        // target is to the "left"
+        if (nums[mid] <= nums[r] || nums[r] < target) {
+          // If nums[mid] <= nums[r] then [mid,r] section is increasing,
+          // and target < mid, so it must be to the left.
+          // Also target will be to the left when the right edge is less than
+          // target.
+          r = mid - 1;
+        } else {
+          l = mid + 1;
+        }
+      }
     }
     return -1;
-  }
-
-  // check if this section is before the rotation
-  bool isBeforeRotation(int l, int r, const vector<int>& nums) {
-    return nums[l] >= nums[r];
   }
 };
 
