@@ -14,39 +14,25 @@ struct ListNode {
 class Solution {
  public:
   ListNode* removeNthFromEnd(ListNode* head, int n) {
-    // 1) get size of list
-    // 2) now go to the size-n th node and remove it
     if (!head) {
-      return nullptr;
+      return head;
     }
-    int length = getLength(head);
-    int toRemoveIndex = length - n;
-    if (toRemoveIndex == 0) {
-      return head->next;
-    }
-    int i = 0;
     ListNode* cur = head;
-    while (i < toRemoveIndex - 1) {
+    // Move cur n spots ahead
+    while (n > 0) {
       cur = cur->next;
-      i++;
+      n--;
     }
-    // Now cur->toRemove
-    if (cur->next) {
-      cur->next = cur->next->next;
-    } else {
-      cur->next = nullptr;
-    }
-    return head;
-  }
 
- private:
-  int getLength(ListNode* head) {
-    int length = 0;
-    while (head) {
-      length++;
-      head = head->next;
+    ListNode dummy{0, head};
+    ListNode* beforeRemove = &dummy;
+    while (cur) {
+      cur = cur->next;
+      beforeRemove = beforeRemove->next;
     }
-    return length;
+
+    beforeRemove->next = beforeRemove->next->next;
+    return dummy.next;
   }
 };
 
