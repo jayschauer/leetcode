@@ -17,7 +17,21 @@ class Solution {
  public:
   int maxDepth(TreeNode* root) {
     if (!root) return 0;
-    return 1 + max(maxDepth(root->left), maxDepth(root->right));
+    stack<pair<TreeNode*, int>> nodes;
+    nodes.push({root, 1});
+    int maxDepth = 0;
+    while (!nodes.empty()) {
+      pair<TreeNode*, int> current = nodes.top();
+      nodes.pop();
+
+      TreeNode* node = current.first;
+      int depth = current.second;
+
+      maxDepth = max(maxDepth, depth);
+      if (node->left) nodes.push({node->left, depth + 1});
+      if (node->right) nodes.push({node->right, depth + 1});
+    }
+    return maxDepth;
   }
 };
 
