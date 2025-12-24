@@ -16,30 +16,20 @@ struct TreeNode {
 class Solution {
  public:
   int diameterOfBinaryTree(TreeNode* root) {
-    pair<int, int> result = diameterOfBinaryTreeInner(root);
-    return max(result.first, result.second);
+    auto [maxDiameter, height] = diameterOfBinaryTreeInner(root);
+    return maxDiameter;
   }
 
  private:
   pair<int, int> diameterOfBinaryTreeInner(TreeNode* root) {
-    if (!root) return {-1, -1};
+    if (!root) return {-1, 0};
 
-    auto leftDiameter = diameterOfBinaryTreeInner(root->left);
-    auto rightDiameter = diameterOfBinaryTreeInner(root->right);
+    auto [leftD, leftH] = diameterOfBinaryTreeInner(root->left);
+    auto [rightD, rightH] = diameterOfBinaryTreeInner(root->right);
 
-    // We can either make a path going through root, or a path ending at root
-    // result.first is for the path going through root
-    // result.second is for the path ending at root
+    // Diameter at root is leftH + rightH.
 
-    // through: we connect the left/right through root with 2 edges
-    int through = leftDiameter.second + rightDiameter.second + 2;
-    through = max({through, leftDiameter.first, rightDiameter.first});
-
-    // ending at root: we add 1 edge to the longer of the paths ending at
-    // right/left
-    int ending = 1 + max(leftDiameter.second, rightDiameter.second);
-
-    return {through, ending};
+    return {max({leftD, rightD, leftH + rightH}), 1 + max(leftH, rightH)};
   }
 };
 
