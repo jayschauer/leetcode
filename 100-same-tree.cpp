@@ -16,11 +16,11 @@ struct TreeNode {
 class Solution {
  public:
   bool isSameTree(TreeNode* p, TreeNode* q) {
-    stack<pair<TreeNode*, TreeNode*>> stack;
-    stack.push({p, q});
-    while (!stack.empty()) {
-      auto [p, q] = stack.top();
-      stack.pop();
+    queue<pair<TreeNode*, TreeNode*>> queue;
+    queue.push({p, q});
+    while (!queue.empty()) {
+      auto [p, q] = queue.front();
+      queue.pop();
 
       if (!p && !q) continue;
 
@@ -28,8 +28,8 @@ class Solution {
 
       if (p->val != q->val) return false;
 
-      stack.push({p->left, q->left});
-      stack.push({p->right, q->right});
+      queue.push({p->left, q->left});
+      queue.push({p->right, q->right});
     }
     return true;
   }
