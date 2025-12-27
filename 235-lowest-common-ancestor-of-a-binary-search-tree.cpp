@@ -16,12 +16,55 @@ struct TreeNode {
 class Solution {
  public:
   TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
-    if (!root || !p || !q) return nullptr;
-    if (p->val < root->val && q->val < root->val)
-      return lowestCommonAncestor(root->left, p, q);
-    if (p->val > root->val && q->val > root->val)
-      return lowestCommonAncestor(root->right, p, q);
-    return root;
+    return helper(root, p, q).node;
+  }
+
+ private:
+  struct SearchResult {
+    TreeNode* node;  // The node found (p, q, or LCA)
+    bool isFixed;  // True ONLY if this node is the definitive LCA (found both p
+                   // and q below)
+  };
+
+  SearchResult helper(TreeNode* root, TreeNode* p, TreeNode* q) {
+    if (!root) {
+      return {nullptr, false};
+    }
+
+    // OPTIMIZATION 1: The "Solution 1" Logic
+    // If we hit p or q, stop traversing this subtree immediately.
+    // We mark isFixed as false because we haven't found the *other* node yet.
+    if (root == p || root == q) {
+      return {root, false};
+    }
+
+    // Search Left
+    SearchResult left = helper(root->left, p, q);
+
+    // OPTIMIZATION 2: The "Solution 2" Logic
+    // If the left side found the definite LCA, stop! Do not search the right.
+    if (left.isFixed) {
+      return left;
+    }
+
+    // Search Right
+    SearchResult right = helper(root->right, p, q);
+
+    // OPTIMIZATION 2 (Continued):
+    // If the right side found the definite LCA, pass it up.
+    if (right.isFixed) {
+      return right;
+    }
+
+    // MERGE LOGIC
+    // If we found something on the left AND something on the right,
+    // then the current 'root' is the LCA.
+    if (left.node && right.node) {
+      return {root, true};  // isFixed = true! We found both.
+    }
+
+    // Otherwise, bubble up whichever non-null value we found.
+    return left.node ? left : right;
   }
 };
 
