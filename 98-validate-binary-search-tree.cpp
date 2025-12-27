@@ -16,7 +16,8 @@ struct TreeNode {
 class Solution {
  public:
   bool isValidBST(TreeNode* root) {
-    return isValidBSTHelper(root, numeric_limits<long>::min(), numeric_limits<long>::max());
+    return isValidBSTHelper(root, numeric_limits<long>::min(),
+                            numeric_limits<long>::max());
   }
 
  private:
@@ -25,14 +26,12 @@ class Solution {
       return true;
     }
 
-    long cur = root->val;
-
-    if (cur <= minVal || cur >= maxVal) {
+    if (!(root->val > minVal && root->val < maxVal)) {
       return false;
     }
 
-    return isValidBSTHelper(root->left, minVal, min(maxVal, cur)) &&
-           isValidBSTHelper(root->right, max(minVal, cur), maxVal);
+    return isValidBSTHelper(root->left, minVal, root->val) &&
+           isValidBSTHelper(root->right, root->val, maxVal);
   }
 };
 
